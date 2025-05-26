@@ -1,0 +1,370 @@
+/** -------- Contrast Mode  -------- **/
+@mixin contrastMode($color, $bg_color) {
+  background-color: $bg-color;
+
+  .preloader {
+    background-color: $bg_color;
+
+    i {
+      color: $color !important;
+    }
+  }
+
+  header {
+    border-bottom: 1px solid $bg_color;
+  }
+
+  a,
+  p,
+  span,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  li,
+  label,
+  div,
+  i,
+  small {
+    color: $color !important;
+
+    &:before {
+      color: $color !important;
+    }
+  }
+
+  ul {
+    li {
+      &:before {
+        color: $color !important;
+      }
+    }
+  }
+
+  a {
+    border: 2px dotted $color !important;
+  }
+
+  .reset-btn,
+  .mode-icon {
+    i {
+      color: $color !important;
+    }
+  }
+
+  .btn {
+    &.btn-primary {
+      background-color: $bg_color !important;
+      border-radius: 0 !important;
+    }
+  }
+
+  button {
+    &.decrease,
+    &.increase {
+      color: $color !important;
+    }
+  }
+
+  .accessibility {
+    &-option {
+      &.active {
+        .option-icon {
+          border: 1px solid $color !important;
+
+          i {
+            color: $color !important;
+          }
+        }
+      }
+
+      &:not(.reset-option) {
+        &:hover {
+          .option-icon {
+            background: transparent;
+            border-color: $color !important;
+
+            i {
+              color: $color !important;
+            }
+          }
+        }
+      }
+
+      &.reset-option {
+        background-color: $bg_color !important;
+        color: $color !important;
+        border: 2px dotted $color !important;
+        border-radius: 0;
+
+        i {
+          color: $color !important;
+        }
+
+        &:hover {
+          background-color: $bg_color !important;
+          color: $color !important;
+
+          i {
+            color: $color !important;
+          }
+        }
+      }
+    }
+  }
+
+  .tooltip-box,
+  .bg-dark-mode,
+  .bg-light-mode,
+  .bg-blue-mode,
+  .bg-green-mode {
+    background: $bg_color !important;
+    color: $color !important;
+
+    &::after {
+      border-left-color: $bg_color !important;
+    }
+  }
+
+  .btn {
+    &.btn-primary {
+      &:hover {
+        background-color: transparent !important;
+      }
+    }
+
+    &-reset {
+      color: $bg_color !important;
+    }
+  }
+
+  nav {
+    li {
+      &:hover {
+        .menu-top-element {
+          background-color: $color !important;
+          color: $bg_color !important;
+          border-color: $bg_color !important;
+
+          span {
+            color: $bg_color !important;
+          }
+        }
+      }
+    }
+
+    .menu-top-element {
+      &:hover {
+        background-color: $color !important;
+        color: $bg_color !important;
+        border-color: $bg_color !important;
+
+        span {
+          color: $bg_color !important;
+        }
+      }
+
+      &:focus {
+        border: 3px solid $bg_color !important;
+      }
+    }
+  }
+
+  .dropdown-item {
+    background-color: $bg_color !important;
+
+
+    &:hover {
+      background-color: $color !important;
+      color: $bg_color !important;
+    }
+
+    &:focus {
+      border: 3px solid $bg_color !important;
+    }
+  }
+}
+
+/** -------- Dark Mode  -------- **/
+@mixin darkMode($color, $bg_color) {
+  .preloader {
+    background-color: $bg_color;
+
+    i {
+      color: $color !important;
+    }
+  }
+
+  header {
+    border-bottom: 1px solid $bg_color;
+  }
+
+  a,
+  p,
+  span,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  li,
+  label,
+  div,
+  i,
+  small {
+    color: $color !important;
+
+    &:before {
+      color: $color !important;
+    }
+  }
+
+  ul {
+    li {
+      &:before {
+        color: $color !important;
+      }
+    }
+  }
+
+  .reset-btn,
+  .mode-icon {
+    i {
+      color: $color !important;
+    }
+  }
+
+  .btn {
+    &.btn-primary {
+      background-color: $bg_color !important;
+      border-radius: 0 !important;
+    }
+  }
+
+  button {
+    &.decrease,
+    &.increase {
+      color: $color !important;
+    }
+  }
+
+  .accessibility {
+    &-option {
+      &.active {
+        .option-icon {
+          border: 1px solid $color !important;
+
+          i {
+            color: $color !important;
+          }
+        }
+      }
+
+      &:not(.reset-option) {
+        &:hover {
+          .option-icon {
+            background: transparent;
+            border-color: $color !important;
+
+            i {
+              color: $color !important;
+            }
+          }
+        }
+      }
+
+      &.reset-option {
+        background-color: $bg_color !important;
+        color: $color !important;
+        border-radius: 0;
+
+        i {
+          color: $color !important;
+        }
+
+        &:hover {
+          background-color: $bg_color !important;
+          color: $color !important;
+
+          i {
+            color: $color !important;
+          }
+        }
+      }
+    }
+  }
+
+  .tooltip-box,
+  .bg-dark-mode,
+  .bg-light-mode,
+  .bg-blue-mode,
+  .bg-green-mode {
+    background: $bg_color !important;
+    color: $color !important;
+
+    &::after {
+      border-left-color: $bg_color !important;
+    }
+  }
+
+  .btn {
+    &.btn-primary {
+      &:hover {
+        background-color: transparent !important;
+      }
+    }
+
+    &-reset {
+      color: $bg_color !important;
+    }
+  }
+
+  nav {
+    li {
+      &:hover {
+        .menu-top-element {
+          background-color: $color !important;
+          color: $bg_color !important;
+          border-color: $bg_color !important;
+
+          span {
+            color: $bg_color !important;
+          }
+        }
+      }
+    }
+
+    .menu-top-element {
+      &:hover {
+        background-color: $color !important;
+        color: $bg_color !important;
+        border-color: $bg_color !important;
+
+        span {
+          color: $bg_color !important;
+        }
+      }
+
+      &:focus {
+        border: 3px solid $bg_color !important;
+      }
+    }
+  }
+
+  .dropdown-item {
+    background-color: $bg_color !important;
+
+
+    &:hover {
+      background-color: $color !important;
+      color: $bg_color !important;
+    }
+
+    &:focus {
+      border: 3px solid $bg_color !important;
+    }
+  }
+}

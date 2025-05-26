@@ -1,0 +1,364 @@
+<?php
+namespace ProcessWire;
+
+use ProcessWire\Module;
+
+class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableModule {
+    public static function getModuleInfo()
+    {
+        return array(
+            'title' => 'Wesanox Accessibility Tool',
+            'summary' => 'A little Accessibility Tool for Processwire made by wesanox.',
+            'version' => '0.0.1',
+            'author' => 'wesanox',
+            'icon' => 'male',
+            'singular' => true,
+            'autoload' => true,
+            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
+            'requires' => array(
+                'ProcessWire>=3.0.210',
+                'PHP>=8.0.0',
+//                'WesanoxMatrixContent>=0.0.1'
+            ),
+        );
+    }
+
+    protected string $lang_name = 'de-ls';
+
+    protected array $internal_modules = [
+        'LanguageSupport',
+        'LanguageSupportFields',
+        'LanguageSupportPageNames',
+        'LanguageTabs'
+    ];
+
+    protected array $frontend_modules = [
+        'dark',
+        'font',
+        'contrast',
+        'image',
+        'language',
+        'reset',
+    ];
+
+    /**
+     * install function for the module
+     *
+     * @return void
+     * @throws WirePermissionException
+     */
+    public function ___install() : void
+    {
+        foreach ($this->internal_modules as $moduleName) {
+            if (!$this->modules->isInstalled($moduleName)) {
+                $this->modules->get($moduleName);
+            }
+        }
+
+        $existing = $this->wire->languages->get($this->lang_name);
+
+        if($existing && $existing->id) {
+            $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
+        } else {
+            /**
+             * @TODO easy language settings. At the Moment we have Problems with the installation of this part - we got an error at this way
+             */
+//            $language = new Page();
+//            $language->template = 'language';
+//            $language->parent = $this->wire->pages->get("template=language");
+//            $language->name = $this->lang_name;
+//            $language->title = 'Einfache Sprache';
+//            $language->save();
+//
+//            $this->wire->languages->add($language);
+//            $this->wire->languages->add($this->lang_name);
+        }
+    }
+
+    /**
+     * Modul-Konfiguration
+     */
+    public static function getModuleConfigInputfields(array $data) : InputfieldWrapper
+    {
+        $inputfields = new InputfieldWrapper();
+
+        /**
+         * Represents a variable named $f.
+         *
+         * The purpose and type of this variable should be defined
+         * based on its usage in the application. Ensure that
+         * adequate context is provided where this variable is utilized.
+         */
+        $f = wire('modules')->get('InputfieldCheckboxes');
+        $f->name = 'frontend_modules';
+        $f->label = __('Module im Frontend entfernen');
+        $f->description = __('Wähle die Module aus, die im Frontend entfernt werden sollen.');
+        $f->columnWidth = 50;
+        $f->addOption('not_dark', '"Nachtmodus" nicht anzeigen');
+        $f->addOption('not_font', '"Schriftgröße" nicht anzeigen');
+        $f->addOption('not_contrast', '"Kontrastmodes" nicht anzeigen');
+        $f->addOption('not_image', '"Bilder ausblenden" nicht anzeigen');
+        $f->addOption('not_language', '"Leichte Sprache" nicht anzeigen');
+        $f->value = isset($data['frontend_modules']) ? $data['frontend_modules'] : [];
+        $inputfields->add($f);
+
+        $f = wire('modules')->get('InputfieldText');
+        $f->name = 'url_accessibility';
+        $f->label = __('URL für die Barrierefreiheitshinweise.');
+        $f->description = __('Wenn diese nicht gesetzt wird, wird diese auf die Standard-URL der erstellten Seite gesetzt. (/barrierefreiheit/)');
+        $f->placeholder = '/barrierefreiheit/';
+        if (isset($data['url_accessibility'])) $f->value = $data['url_accessibility'];
+        $f->columnWidth = 50;
+        $inputfields->add($f);
+
+        $f = wire('modules')->get('InputfieldCheckbox');
+        $f->name = 'remove_language_modules';
+        $f->label = __('Sprachmodule beim Deinstallieren automatisch entfernen');
+        $f->description = __('Achtung: Diese Option entfernt Sprachunterstützung dauerhaft.');
+        $f->value = 1;
+        $f->columnWidth = 50;
+        $f->checked = !empty($data['remove_language_modules']);
+        $inputfields->add($f);
+
+        $f = wire('modules')->get('InputfieldCheckbox');
+        $f->name = 'easy_language';
+        $f->label = __('Sprache "Einfache Sprache" hinzufügen');
+        $f->description = __('Fügt eine neue Sprache mit dem Namen "einfache-sprache" hinzu. (Noch nicht funktional)');
+        $f->value = 1;
+        $f->columnWidth = 50;
+        $f->checked = !empty($data['easy_language']);
+        $inputfields->add($f);
+
+        return $inputfields;
+    }
+
+    /**
+     * uninstall function for the modul
+     *
+     * @return void
+     * @throws WireException
+     */
+    public function ___uninstall() : void
+    {
+        $remove = $this->data['remove_language_modules'] ?? false;
+
+        if($remove) {
+            $modules = [
+                'LanguageTabs',
+                'LanguageSupportPageNames',
+                'FieldtypePageTitleLanguage',
+                'FieldtypeTextLanguage',
+                'FieldtypeTextareaLanguage',
+                'LanguageSupportFields',
+                'LanguageSupport',
+            ];
+
+            foreach($modules as $mod) {
+                if($this->modules->isInstalled($mod)) {
+                    $this->modules->uninstall($mod);
+
+                    wire('log')->save('module-uninstall', "Modul {$mod} wurde entfernt durch MyLanguageCleaner.");
+                }
+            }
+        } else {
+            wire('log')->save('module-uninstall', "Sprachmodule wurden beibehalten (Konfiguration).");
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function init()
+    {
+        $this->addHookAfter('Page::render', $this, 'renderAccessibilityTool');
+
+        /**
+         * @TODO this is not working with ProCache and wouldn´t be minimazed.
+         */
+//        foreach($this->frontend_modules AS $module)
+//        {
+//            $array = in_array('not_' . $module, $this->data['frontend_modules']);
+//
+//            if ( !$array ) {
+//                $this->getAccessibilityScripts('site/modules/WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module);
+//                $this->getAccessibilityStyles('site/modules/WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module);
+//            }
+//        }
+
+        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/scripts/main.js');
+
+        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_dark/module_dark.js');
+        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_font/module_font.js');
+        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_contrast/module_contrast.js');
+        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_image/module_image.js');
+        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_language/module_language.js');
+
+        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/module_dark/module_dark.scss');
+        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/module_font/module_font.scss');
+        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/module_contrast/module_contrast.scss');
+
+        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/styles/main.scss');
+    }
+
+    public function renderAccessibilityTool(HookEvent $event) {
+        $html = $event->return;
+
+        $link_accessibility = (isset($this->data['url_accessibility']) ) ? $this->data['url_accessibility'] : '/barrierefreiheit/';
+
+//        $savedLanguage = wire()->user->language;
+
+//        foreach(wire()->languages as $language) {
+//            if(!wire()->page->viewable($language)) continue;
+//
+//            $title          = ($language->name === 'default') ? 'de' : $language->name;
+//            $active         = ($savedLanguage->id == $language->id) ?' active' : '';
+//            wire()->user->language = $language;
+//
+//            $link = wire()->page->url;
+//
+//            if ($savedLanguage == 'default') {
+//                $html_language .= '
+//                    <a href="' . $link . '" class="accessibility-option" id="module-language" data-tooltip-title="Leichte Sprache" data-tooltip-text="Hier steht ein kurzer Text zur Funktionsbeschreibung.">
+//                        <div class="option-icon"><i class="fas fa-language"></i></div>
+//                        <span>Leichte Sprache</span>
+//                    </a>';
+//            } else if ($savedLanguage == 'einfache-sprache') {
+//                $html_language .= '
+//                    <a href="' . $link . '" class="accessibility-option active" id="module-language" data-tooltip-title="Leichte Sprache" data-tooltip-text="Hier steht ein kurzer Text zur Funktionsbeschreibung.">
+//                        <div class="option-icon"><i class="fas fa-language"></i></div>
+//                        <span>Leichte Sprache</span>
+//                    </a>';
+//            } else {
+//                $html_language .= "";
+//            }
+//
+//        }
+
+//        wire()->user->language = $savedLanguage;
+
+
+        // Deine gewünschte Einbindung
+        $insert = '
+                    <div class="accessibility-widget position-fixed">
+                        <!-- Floating Button -->
+                        <button class="accessibility-button" aria-label="Open Accessibility Options">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M12 2a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2c0-1.1.9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z" />
+                            </svg>
+                        </button>
+                    
+                        <!-- Widget Panel -->
+                        <div class="accessibility-panel">
+                            <div id="tooltip-container"></div>
+                            <div class="py-2 ps-4 pe-2 bg-dark">
+                                <div class="row">
+                                    <div class="col-10">
+                                        <div class="h5 text-white">Barrierefreiheit</div>
+                                        <div class="h6 text-white">Einstellungen</div>
+                                    </div>
+                                    <div class="col-2 d-flex justify-content-end align-items-center">
+                                        <div>
+                                            <button class="d-flex align-items-center justify-content-center btn-close" aria-label="Close Accessibility Panel">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 accessibility-content">
+                                <div class="h6 mb-3">
+                                    <a href="' . $link_accessibility . '">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16">
+                                            <path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>
+                                        </svg>
+                                        Informationen zur Barrierefreiheit
+                                     </a>
+                                </div>
+                                ' . $this->getModulesFrontend() . '
+                            </div>
+                        </div>
+                    </div>';
+
+        // Direkt nach <body> einfügen
+        $html = preg_replace('/<body>/', "<body>\n$insert", $html, 1);
+
+        $event->return = $html;
+    }
+
+    /**
+     * Adds a new language with the name "leichte-sprache" or "de-ls" to the system.
+     * The method checks if the language already exists. If it does not, it creates and saves
+     * the new language under the languages root page. Once added, the language becomes available
+     * in the system.
+     *
+     * @return void
+     * @throws WireException If the languages root page cannot be found.
+     */
+    protected function addEasyLanguage() : void {
+        if($this->wire->languages->get($this->lang_name)->id) {
+            $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
+        } else {
+            // Sprachen-Seite finden
+            $parent = $this->wire->pages->get("template=language");
+
+            if(!$parent->id) {
+                throw new WireException("Konnte die Sprachen-Seite nicht finden.");
+            }
+
+            $this->wire->languages->add($this->lang_name);
+
+            $this->message("Sprache 'Einfache Sprache' wurde hinzugefügt.");
+        }
+    }
+
+    /**
+     * @return string
+     */
+    private function getModulesFrontend() : string
+    {
+        $html = '';
+
+        foreach ($this->frontend_modules as $module) {
+            $array = (isset($this->data['frontend_modules'])) ? in_array('not_' . $module, $this->data['frontend_modules']) : NULL;
+
+            if (!$array) {
+                $html .= file_get_contents($this->config->paths->root . "site/modules/WesanoxAccessibilityTool/src/module_$module/module_$module.php");
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * Add accessibility styles to the configuration.
+     *
+     * @param string $files_dir The directory path where the style files are located.
+     * @param string $type_name The specific type name used to locate the style file.
+     *
+     * @return void
+     */
+    private function getAccessibilityStyles(string $files_dir, string $type_name) : void
+    {
+        if (file_exists($files_dir . $type_name . '.scss')) {
+            wire()->config->styles->add($files_dir . $type_name . '.scss');
+        }
+    }
+
+    /**
+     * Add accessibility scripts to the configuration if the specified script file exists.
+     *
+     * @param string $files_dir Directory path where the script files are located.
+     * @param string $type_name Name of the type used to locate the script file.
+     *
+     * @return void
+     */
+    private function getAccessibilityScripts(string $files_dir, string $type_name) : void
+    {
+        if (file_exists($files_dir . $type_name . '.js')) {
+            wire()->config->scripts->add($files_dir . $type_name . '.js');
+        }
+    }
+}

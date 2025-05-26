@@ -1,0 +1,23 @@
+@import "../styles/styles_main/_variables";
+
+#module-font-size-content {
+  button {
+    &.decrease,
+    &.increase {
+      background: none;
+      color: initial;
+      font-size: 25px;
+      font-weight: bold;
+      margin-top: -3px;
+      cursor: pointer;
+      border: none;
+    }
+  }
+
+  span {
+    min-width: 20px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,54 @@
+@import "../styles/styles_main/_variables";
+@import "../styles/styles_main/_mixins";
+
+
+.mode-1 {
+  background: linear-gradient(-45deg, white 50%, black 50%);
+}
+
+.mode-2 {
+  background: linear-gradient(-45deg, black 50%, white 50%);
+}
+
+.mode-3 {
+  background: linear-gradient(-45deg, $contrast-mode-3-content 50%, $contrast-mode-3-background 50%);
+}
+
+.mode-4 {
+  background: linear-gradient(-45deg, $contrast-mode-4-content 50%, $contrast-mode-4-background 50%);
+}
+
+.contrast-options {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+}
+
+.contrast-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+
+  &-1 {
+    @include contrastMode(white, black);
+  }
+
+  &-2 {
+    @include contrastMode(black, white);
+  }
+
+  &-3 {
+    @include contrastMode($contrast-mode-3-content, $contrast-mode-3-background);
+  }
+
+  &-4 {
+    @include contrastMode($contrast-mode-4-content, $contrast-mode-4-background);
+  }
+}

@@ -1,0 +1,8 @@
+@import "../styles/styles_main/_variables";
+@import "../styles/styles_main/_mixins";
+
+.dark-mode {
+  background-color: #101010;
+
+  @include darkMode(  white , #1c1c1c );
+}
