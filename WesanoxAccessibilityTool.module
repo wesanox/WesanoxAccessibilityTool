@@ -9,7 +9,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         return array(
             'title' => 'Wesanox Accessibility Tool',
             'summary' => 'A little Accessibility Tool for Processwire made by wesanox.',
-            'version' => '0.0.2',
+            'version' => '0.0.3',
             'author' => 'Frittenfritze',
             'href' => 'https://wesanox.de',
             'icon' => 'male',
