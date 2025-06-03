@@ -9,11 +9,11 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         return array(
             'title' => 'Wesanox Accessibility Tool',
             'summary' => 'A little Accessibility Tool for Processwire made by wesanox.',
-            'version' => '0.0.1',
-            'author' => 'wesanox',
+            'version' => '0.0.2',
+            'author' => 'Frittenfritze',
+            'href' => 'https://wesanox.de',
             'icon' => 'male',
             'singular' => true,
-            'autoload' => true,
             'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
             'requires' => array(
                 'ProcessWire>=3.0.210',
@@ -168,36 +168,11 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     /**
      * @return void
      */
-    public function init()
+    public function ready()
     {
-        $this->addHookAfter('Page::render', $this, 'renderAccessibilityTool');
-
-        /**
-         * @TODO this is not working with ProCache and wouldn´t be minimazed.
-         */
-//        foreach($this->frontend_modules AS $module)
-//        {
-//            $array = in_array('not_' . $module, $this->data['frontend_modules']);
-//
-//            if ( !$array ) {
-//                $this->getAccessibilityScripts('site/modules/WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module);
-//                $this->getAccessibilityStyles('site/modules/WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module);
-//            }
-//        }
-
-        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/scripts/main.js');
-
-        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_dark/module_dark.js');
-        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_font/module_font.js');
-        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_contrast/module_contrast.js');
-        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_image/module_image.js');
-        wire()->config->scripts->add('/site/modules/WesanoxAccessibilityTool/src/module_language/module_language.js');
-
-        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/module_dark/module_dark.scss');
-        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/module_font/module_font.scss');
-        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/module_contrast/module_contrast.scss');
-
-        wire()->config->styles->add('/site/modules/WesanoxAccessibilityTool/src/styles/main.scss');
+        if ($this->page->template != 'admin') {
+            $this->addHookAfter('Page::render', $this, 'renderAccessibilityTool');
+        }
     }
 
     public function renderAccessibilityTool(HookEvent $event) {
@@ -283,7 +258,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
                     </div>';
 
         // Direkt nach <body> einfügen
-        $html = preg_replace('/<body>/', "<body>\n$insert", $html, 1);
+        $html = preg_replace('/<body\b([^>]*)>/', "<body$1>\n$insert", $html, 1);
 
         $event->return = $html;
     }
@@ -319,7 +294,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
      */
     private function getModulesFrontend() : string
     {
-        $html = '';
+        $html = "";
 
         foreach ($this->frontend_modules as $module) {
             $array = (isset($this->data['frontend_modules'])) ? in_array('not_' . $module, $this->data['frontend_modules']) : NULL;
@@ -333,18 +308,70 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     }
 
     /**
+     * @return string
+     */
+    public function renderStyles() : string
+    {
+        $styles = "<link rel='stylesheet' type='text/css'  href='" . $this->config->paths->siteModules .  "WesanoxAccessibilityTool/src/styles/main.scss'>";
+
+        foreach($this->frontend_modules AS $module)
+        {
+            $array = false;
+
+            if(isset ($this->data['frontend_modules']))
+            {
+                $array = in_array('not_' . $module, $this->data['frontend_modules']);
+            }
+
+            if ( !$array && $this->getAccessibilityStyles($this->config->paths->siteModules .  'WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module) != '') {
+                $styles .= "<link rel='stylesheet' type='text/css'  href='" . $this->getAccessibilityStyles($this->config->paths->siteModules .  'WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module) . "'>";
+            }
+        }
+
+        return $styles;
+    }
+
+    /**
+     * @return string
+     */
+    public function renderScripts() : string
+    {
+        $scripts = "<script src='" . $this->config->paths->siteModules .  "WesanoxAccessibilityTool/src/scripts/main.js'></script>";
+
+        foreach($this->frontend_modules AS $module)
+        {
+            $array = false;
+
+            if(isset($this->data['frontend_modules']))
+            {
+                $array = in_array('not_' . $module, $this->data['frontend_modules']);
+            }
+
+            if ( !$array && $this->getAccessibilityScripts($this->config->paths->siteModules .  'WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module) != '' ) {
+                $scripts .= "<script src='" . $this->getAccessibilityScripts($this->config->paths->siteModules .  'WesanoxAccessibilityTool/src/module_' . $module . '/', 'module_' . $module) . "'></script>";
+            }
+        }
+
+        return $scripts;
+    }
+
+    /**
      * Add accessibility styles to the configuration.
      *
      * @param string $files_dir The directory path where the style files are located.
      * @param string $type_name The specific type name used to locate the style file.
      *
-     * @return void
+     * @return string
      */
-    private function getAccessibilityStyles(string $files_dir, string $type_name) : void
+    private function getAccessibilityStyles(string $files_dir, string $type_name) : string
     {
+        $url = '';
+
         if (file_exists($files_dir . $type_name . '.scss')) {
-            wire()->config->styles->add($files_dir . $type_name . '.scss');
+            $url = $files_dir . $type_name . '.scss';
         }
+
+        return $url;
     }
 
     /**
@@ -353,12 +380,16 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
      * @param string $files_dir Directory path where the script files are located.
      * @param string $type_name Name of the type used to locate the script file.
      *
-     * @return void
+     * @return string
      */
-    private function getAccessibilityScripts(string $files_dir, string $type_name) : void
+    private function getAccessibilityScripts(string $files_dir, string $type_name) : string
     {
+        $url = '';
+
         if (file_exists($files_dir . $type_name . '.js')) {
-            wire()->config->scripts->add($files_dir . $type_name . '.js');
+            $url = $files_dir . $type_name . '.js';
         }
+
+        return $url;
     }
 }

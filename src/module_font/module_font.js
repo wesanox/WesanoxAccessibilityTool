@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const SIZE_INCREMENT = 3;
 
     const fontSizeContent = document.getElementById('module-font-size-content');
-    const fontSizeResetBtn = document.querySelector('#module-font-size-content .reset-btn');
+    const fontSizeResetBtn = document.querySelector('#module-font-size-content .btn-reset');
     const header = document.querySelector('header');
 
     if (fontSizeResetBtn) {
