@@ -15,7 +15,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             'icon' => 'male',
             'singular' => true,
             'autoload' => true,
-            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
+            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs', 'WesanoxMatrixContent'],
             'requires' => array(
                 'ProcessWire>=3.0.210',
                 'PHP>=8.0.0',
