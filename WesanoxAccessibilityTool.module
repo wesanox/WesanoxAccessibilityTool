@@ -19,16 +19,16 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             'requires' => array(
                 'ProcessWire>=3.0.210',
                 'PHP>=8.0.0',
-//                'WesanoxMatrixContent>=0.0.1',
+                'WesanoxMatrixContent>=0.0.1',
             ),
         );
     }
 
     protected string $lang_name = 'de-ls';
 
-//    protected array $externalModules = [
-//        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
-//    ];
+    protected array $externalModules = [
+        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
+    ];
 
     protected array $internal_modules = [
         'LanguageSupport',
