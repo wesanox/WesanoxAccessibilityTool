@@ -7,13 +7,14 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     public static function getModuleInfo()
     {
         return array(
-            'title' => 'Wesanox Accessibility Tool',
+            'title' => 'wesanox Accessibility Tool',
             'summary' => 'A little Accessibility Tool for Processwire made by wesanox.',
             'version' => '0.0.3',
             'author' => 'Frittenfritze',
             'href' => 'https://wesanox.de',
             'icon' => 'male',
             'singular' => true,
+            'autoload' => true,
             'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
             'requires' => array(
                 'ProcessWire>=3.0.210',
