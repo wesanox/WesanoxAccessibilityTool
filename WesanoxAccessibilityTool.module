@@ -15,16 +15,20 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             'icon' => 'male',
             'singular' => true,
             'autoload' => true,
-            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
+            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs', 'WesanoxMatrixContent'],
             'requires' => array(
                 'ProcessWire>=3.0.210',
                 'PHP>=8.0.0',
-//                'WesanoxMatrixContent>=0.0.1'
+                'WesanoxMatrixContent>=0.0.1',
             ),
         );
     }
 
     protected string $lang_name = 'de-ls';
+
+    protected array $externalModules = [
+        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
+    ];
 
     protected array $internal_modules = [
         'LanguageSupport',
@@ -56,6 +60,14 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             }
         }
 
+        // Install external modules
+        foreach ($this->externalModules as $moduleName => $moduleUrl) {
+            if (!$this->modules->isInstalled($moduleName)) {
+                $message = $this->downloadAndInstallModule($moduleName, $moduleUrl);
+                if ($message !== true) $this->error($message);
+            }
+        }
+
         $existing = $this->wire->languages->get($this->lang_name);
 
         if($existing && $existing->id) {
@@ -74,6 +86,37 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
 //            $this->wire->languages->add($language);
 //            $this->wire->languages->add($this->lang_name);
         }
+    }
+
+    /**
+     * @param $moduleName
+     * @param $moduleURL
+     * @return bool|string
+     * @throws WireException
+     * @throws WirePermissionException
+     */
+    private function downloadAndInstallModule($moduleName, $moduleURL) {
+        $success = false;
+        $targetDir = $this->wire()->config->paths->siteModules . $moduleName . '/';
+        $moduleInstaller = $this->wire()->modules->get('ProcessModuleInstall');
+        $destinationDir = $moduleInstaller->downloadModule($moduleURL, $targetDir);
+
+        // Refresh modules
+        if($destinationDir) {
+            $this->modules->refresh();
+        }
+
+        // Install module
+        if ($this->modules->isInstallable($moduleName)) {
+            $this->modules->get($moduleName);
+        }
+
+        // Check if module is installed
+        if ($this->modules->isInstalled($moduleName)) {
+            $success = true;
+        }
+
+        return $success ?: "Module $moduleName could not be installed.";
     }
 
     /**
