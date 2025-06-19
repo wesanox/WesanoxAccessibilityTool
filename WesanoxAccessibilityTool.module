@@ -9,26 +9,26 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         return array(
             'title' => 'wesanox Accessibility Tool',
             'summary' => 'A little Accessibility Tool for Processwire made by wesanox.',
-            'version' => '0.0.3',
+            'version' => '0.1.0',
             'author' => 'Frittenfritze',
             'href' => 'https://wesanox.de',
             'icon' => 'male',
             'singular' => true,
             'autoload' => true,
-            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs', 'WesanoxMatrixContent'],
+            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
             'requires' => array(
                 'ProcessWire>=3.0.210',
                 'PHP>=8.0.0',
-                'WesanoxMatrixContent>=0.0.1',
+//                'WesanoxMatrixContent>=0.0.1',
             ),
         );
     }
 
     protected string $lang_name = 'de-ls';
 
-    protected array $externalModules = [
-        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
-    ];
+//    protected array $externalModules = [
+//        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
+//    ];
 
     protected array $internal_modules = [
         'LanguageSupport',
@@ -68,9 +68,19 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             }
         }
 
-        $existing = $this->wire->languages->get($this->lang_name);
+        $existing_lang = $this->wire->languages->get($this->lang_name);
+        $existing_access = $this->wire->pages->get("name=barrierefreiheit");
 
-        if($existing && $existing->id) {
+        if ($existing_access->id == 0) {
+            $access = new Page();
+            $access->template = 'template_content_only';
+            $access->parent = $this->wire->pages->get(1);
+            $access->name = 'barrierefreiheit';
+            $access->title = 'Barrierefreiheitshinweise';
+            $access->save();
+        }
+
+        if($existing_lang && $existing_lang->id) {
             $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
         } else {
             /**
@@ -86,6 +96,8 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
 //            $this->wire->languages->add($language);
 //            $this->wire->languages->add($this->lang_name);
         }
+
+
     }
 
     /**
@@ -185,6 +197,12 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     public function ___uninstall() : void
     {
         $remove = $this->data['remove_language_modules'] ?? false;
+
+        $existing_access = $this->wire->pages->get("name=barrierefreiheit");
+
+        if ($existing_access->id != 0) {
+            $existing_access->delete();
+        }
 
         if($remove) {
             $modules = [
@@ -380,7 +398,10 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
      */
     public function renderScripts() : string
     {
-        $scripts = "<script src='" . $this->config->paths->siteModules .  "WesanoxAccessibilityTool/src/scripts/main.js'></script>";
+        $scripts = "
+            <script src='" . $this->config->paths->siteModules .  "WesanoxAccessibilityTool/src/scripts/scripts_main/_functions.js'></script>
+            <script src='" . $this->config->paths->siteModules .  "WesanoxAccessibilityTool/src/scripts/main.js'></script>
+            ";
 
         foreach($this->frontend_modules AS $module)
         {
