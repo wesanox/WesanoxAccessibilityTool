@@ -1,14 +1,44 @@
-const elementsWithBgClass = document.querySelectorAll('[class*="bg-"]');
+/**
+ * @type {HTMLElement}
+ */
 const nightModeToggle = document.getElementById('dark-mode-toggle');
 
-function applyTheme(theme) {
-    const body = document.body;
-    const isDark = theme === 'dark-mode';
+document.addEventListener('DOMContentLoaded', () => {
+    initDarkMode();
+});
 
-    body.classList.toggle('dark-mode', isDark); // Toggle-Kurzform basierend auf der Bedingung
-    safeStorageSet('theme', theme); // Vereinfachung durch direkte Nutzung von "theme"
+/**
+ * Initializes the theme mode for the application by setting the saved theme and applying event listeners.
+ *
+ * The method determines the previously saved theme mode by retrieving it from storage. If no theme is found, it defaults to 'light' mode.
+ * The theme is applied by invoking the `applyTheme` method
+ *
+ * @return {void} Does not return a value.
+ */
+function initDarkMode() {
+    const savedMode = safeStorageGet('mode') || '';
+
+    applyDarkMode(savedMode);
+
+    nightModeToggle.addEventListener('click', () => {
+        removeAllModes();
+        toggleNightMode();
+    });
+
+    nightModeToggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter')  {
+            removeAllModes();
+            toggleNightMode();
+        }
+    });
 }
 
+/**
+ * Updates the theme icon to reflect the current theme mode (dark or light).
+ *
+ * @param {boolean} isDark - A boolean indicating whether the dark theme is active (true) or not (false).
+ * @return {void} Does not return a value.
+ */
 function updateThemeIcon(isDark) {
     const icon = nightModeToggle.getElementsByClassName('option-icon');
 
@@ -21,45 +51,35 @@ function updateThemeIcon(isDark) {
     }
 }
 
-if (nightModeToggle) {
-    // Check for saved theme preference or default to 'light'
-    const currentTheme = safeStorageGet('theme') || 'light';
-    const isDarkMode = currentTheme === 'dark-mode';
+/**
+ * Applies the specified theme to the application by toggling classes and updating relevant elements.
+ *
+ * @param {string} mode - The theme to apply. Accepts 'dark-mode' to enable dark mode, or another value to disable it.
+ * @return {void}
+ */
+function applyDarkMode(mode) {
+    const elements = document.querySelectorAll('[class*="bg-"]');
+    const isDark = mode === 'dark-mode';
 
-    // Apply theme on page load
-    applyTheme(currentTheme);
-    updateThemeIcon(isDarkMode);
+    document.body.classList.toggle('dark-mode', isDark);
+    nightModeToggle.classList.toggle('active', isDark);
 
-    document.querySelectorAll('#fullpage .section .textbox').forEach(el => el.classList.add('bg-dark-mode'));
-
-
-    // Add active class if dark mode is enabled
-    nightModeToggle.classList.toggle('active', isDarkMode);
-
-    elementsWithBgClass.forEach(element => {
-        element.classList.toggle('bg-dark-mode', isDarkMode);
+    elements.forEach(el => {
+        el.classList.toggle('bg-dark-mode', isDark);
     });
 
-    nightModeToggle.addEventListener('click', toggleNightMode);
-
-    nightModeToggle.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            toggleNightMode();
-        }
-    });
+    safeStorageSet('mode', mode);
+    updateThemeIcon(isDark);
 }
 
+/**
+ * Toggles the night mode of the application by switching between light and dark themes.
+ * Checks the current theme applied to the body element, switches to the opposite theme,
+ * and ensures any contrast modes are removed.
+ *
+ * @return {void} No return value.
+ */
 function toggleNightMode() {
-    const isCurrentlyDark = document.body.classList.contains('dark-mode');
-    const newTheme = isCurrentlyDark ? 'light' : 'dark-mode';
-
-    // Apply the new theme
-    applyTheme(newTheme);
-    updateThemeIcon(newTheme === 'dark-mode');
-
-    nightModeToggle.classList.toggle('active', newTheme === 'dark-mode');
-
-    elementsWithBgClass.forEach(element => {
-        element.classList.toggle('bg-dark-mode', newTheme === 'dark-mode');
-    });
+    const isDark = document.body.classList.contains('dark-mode');
+    applyDarkMode(isDark ? '' : 'dark-mode');
 }
