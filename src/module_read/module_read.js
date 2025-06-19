@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Toggle read mode
      */
     toggleMode?.addEventListener('click', toggleReadMode);
+    toggleMode?.addEventListener('keydown', toggleReadMode);
     document.addEventListener('mousemove', updateMaskPosition);
 
     /**
