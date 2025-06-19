@@ -213,13 +213,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             safeStorageSet('fontSize', null);
 
-            // Reset contrast mode
-            const pageContent = document.body;
-
-            removeAllContrastModes();
-
-            safeStorageSet('contrastMode', null);
-
             document.querySelectorAll('.contrast-mode').forEach(mode => {
                 mode.classList.remove('active');
             });
@@ -227,31 +220,42 @@ document.addEventListener('DOMContentLoaded', function () {
             // Reset dark mode
             if (document.body.classList.contains('dark-mode')) {
                 document.body.classList.remove('dark-mode');
-                safeStorageSet('theme', 'light');
 
                 document.getElementById('dark-mode-toggle').classList.remove('active');
             }
 
+            const saved = safeStorageGet('readMode');
+
+            if (saved === 'true') {
+                document.getElementById('module-read-mask').classList.add('d-none');
+            }
+
+            removeAllModes();
+            safeStorageSet('mode', null);
+            safeStorageSet('readMode', false);
+
             // Reset hidden images
             const images = document.querySelectorAll('img:not(.accessibility-widget img)');
+
             images.forEach(img => {
                 img.style.opacity = '1';
                 img.style.visibility = 'visible';
             });
+
             const hideImagesOption = document.getElementById('bilder-ausblenden');
+
             if (hideImagesOption) {
                 hideImagesOption.classList.remove('active');
-                const optionIcon = hideImagesOption.querySelector('.option-icon i');
-                optionIcon.classList.remove('fa-ban');
-                optionIcon.classList.add('fa-image');
             }
             safeStorageSet('imagesHidden', null);
 
             // Reset TTS settings
             const speedDisplay = document.querySelector('.speed-control span');
             if (speedDisplay) speedDisplay.textContent = '1,0x';
+
             const volumeDisplay = document.querySelector('.volume-control span');
             if (volumeDisplay) volumeDisplay.textContent = '100%';
+
             safeStorageSet('ttsSpeed', null);
             safeStorageSet('ttsVolume', null);
 

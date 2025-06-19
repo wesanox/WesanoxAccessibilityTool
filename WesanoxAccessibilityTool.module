@@ -9,7 +9,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         return array(
             'title' => 'wesanox Accessibility Tool',
             'summary' => 'A little Accessibility Tool for Processwire made by wesanox.',
-            'version' => '0.1.0',
+            'version' => '0.1.1',
             'author' => 'Frittenfritze',
             'href' => 'https://wesanox.de',
             'icon' => 'male',
@@ -41,6 +41,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         'dark',
         'font',
         'contrast',
+        'read',
         'image',
         'language',
         'reset',
@@ -153,6 +154,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         $f->addOption('not_dark', '"Nachtmodus" nicht anzeigen');
         $f->addOption('not_font', '"Schriftgröße" nicht anzeigen');
         $f->addOption('not_contrast', '"Kontrastmodes" nicht anzeigen');
+        $f->addOption('not_read', '"Lesemaske" nicht anzeigen');
         $f->addOption('not_image', '"Bilder ausblenden" nicht anzeigen');
         $f->addOption('not_language', '"Leichte Sprache" nicht anzeigen');
         $f->value = isset($data['frontend_modules']) ? $data['frontend_modules'] : [];
@@ -276,6 +278,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
 
         // Deine gewünschte Einbindung
         $insert = '
+                    <div id="module-read-mask" class="d-none"></div>
                     <div class="accessibility-widget position-fixed">
                         <!-- Floating Button -->
                         <button class="accessibility-button" aria-label="Open Accessibility Options">
@@ -307,7 +310,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
                             </div>
                             <div class="bg-white p-4 accessibility-content">
                                 <div class="h6 mb-3">
-                                    <a href="' . $link_accessibility . '">
+                                    <a class="accessibility-link" href="' . $link_accessibility . '">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16">
                                             <path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>
                                         </svg>

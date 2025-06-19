@@ -25,6 +25,8 @@ function initContrastMode() {
         mode.addEventListener('click', () => {
             removeAllModes();
 
+            document.body.classList.remove('dark-mode');
+
             contrastModes.forEach(m => m.classList.remove('active'));
 
             const modeNumber = mode.dataset.mode;
