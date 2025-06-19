@@ -1,0 +1,32 @@
+#module-read-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6); /* dunkle Maske */
+    pointer-events: none;
+  }
+
+  &::before {
+    top: 0;
+    height: calc(var(--y) - 50px);
+    border-bottom: 8px solid darkblue;
+
+  }
+
+  &::after {
+    bottom: 0;
+    top: calc(var(--y) + 50px);
+    border-top: 8px solid darkgreen;
+  }
+}

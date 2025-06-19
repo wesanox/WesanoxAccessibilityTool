@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @return {void} Does not return a value.
  */
 function initDarkMode() {
-    const savedMode = safeStorageGet('mode') || '';
+    const savedMode = safeStorageGet('mode') || null;
 
     applyDarkMode(savedMode);
 

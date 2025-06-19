@@ -8,7 +8,7 @@
 </div>
 <div class="d-none accessibility-option-content" id="module-contrast-modus-content">
     <div class="settings-grid">
-        <div class="contrast-options">
+        <div class="d-flex justify-content-between">
             <div class="contrast-mode refresh-mode" tabindex="0">
                 <div class="mode-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
@@ -17,22 +17,24 @@
                     </svg>
                 </div>
             </div>
-            <button class="contrast-mode" data-mode="1">
-                <div class="mode-icon mode-1"></div>
-                <small>Modi 1</small>
-            </button>
-            <button class="contrast-mode" data-mode="2">
-                <div class="mode-icon mode-2"></div>
-                <small>Modi 2</small>
-            </button>
-            <button class="contrast-mode" data-mode="3">
-                <div class="mode-icon mode-3"></div>
-                <small>Modi 3</small>
-            </button>
-            <button class="contrast-mode" data-mode="4">
-                <div class="mode-icon mode-4"></div>
-                <small>Modi 4</small>
-            </button>
+            <div class="d-flex justify-content-between gap-2">
+                <button class="contrast-mode" data-mode="1">
+                    <div class="mode-icon mode-1"></div>
+                    <small>Modi 1</small>
+                </button>
+                <button class="contrast-mode" data-mode="2">
+                    <div class="mode-icon mode-2"></div>
+                    <small>Modi 2</small>
+                </button>
+                <button class="contrast-mode" data-mode="3">
+                    <div class="mode-icon mode-3"></div>
+                    <small>Modi 3</small>
+                </button>
+                <button class="contrast-mode" data-mode="4">
+                    <div class="mode-icon mode-4"></div>
+                    <small>Modi 4</small>
+                </button>
+            </div>
         </div>
     </div>
 </div>
