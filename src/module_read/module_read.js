@@ -6,8 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
      * Toggle read mode
      */
     toggleMode?.addEventListener('click', toggleReadMode);
-    toggleMode?.addEventListener('keydown', toggleReadMode);
     document.addEventListener('mousemove', updateMaskPosition);
+
+    toggleMode?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            toggleReadMode();
+        }
+    });
 
     /**
      * Restore read mode from storage

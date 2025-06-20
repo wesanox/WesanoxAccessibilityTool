@@ -1,6 +1,11 @@
 /** -------- Contrast Mode  -------- **/
 @mixin contrastMode($color, $bg_color) {
+  background-image: none;
   background-color: $bg-color;
+
+  &:after {
+    background: none;
+  }
 
   .preloader {
     background-color: $bg_color;
@@ -170,11 +175,17 @@
 
     &::after {
       border-left-color: $bg_color !important;
+      background-image: none;
+    }
+
+    &:before {
+      background-image: none;
     }
   }
 
   .btn {
     &.btn-primary {
+      background: $bg_color !important;
       background-color: $bg_color !important;
       border-radius: 0 !important;
 
@@ -187,6 +198,11 @@
       color: $bg_color !important;
       background: transparent !important;
     }
+  }
+
+  input[type="submit"] {
+    border: 1px dashed $color !important;
+    color: $color !important;
   }
 
   nav {
@@ -238,6 +254,8 @@
 
 /** -------- Dark Mode  -------- **/
 @mixin darkMode($color, $bg_color) {
+  background-image: none;
+
   .preloader {
     background-color: $bg_color;
 
@@ -380,13 +398,20 @@
 
     &::after {
       border-left-color: $bg_color !important;
+      background-image: none;
+    }
+
+    &:before {
+      background-image: none;
     }
   }
 
   .btn {
     &.btn-primary {
+      background: $bg_color !important;
       background-color: $bg_color !important;
       border-radius: 0 !important;
+      border: 1px solid $color !important;
 
       &:hover {
         background-color: transparent !important;
@@ -396,6 +421,10 @@
     &-reset {
       color: $bg_color !important;
     }
+  }
+
+  input[type="submit"] {
+    color: $color !important;
   }
 
   nav {

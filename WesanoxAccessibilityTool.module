@@ -242,7 +242,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     public function renderAccessibilityTool(HookEvent $event) {
         $html = $event->return;
 
-        $link_accessibility = (isset($this->data['url_accessibility']) ) ? $this->data['url_accessibility'] : '/barrierefreiheit/';
+        $link_accessibility = ( $this->data['url_accessibility'] != '' ) ? $this->data['url_accessibility'] : '/barrierefreiheit/';
 
 //        $savedLanguage = wire()->user->language;
 

@@ -40,9 +40,9 @@ function initContrastMode() {
         });
 
         mode.addEventListener('keydown', (event) => {
-            removeAllModes();
-
             if (event.key === 'Enter') {
+                removeAllModes();
+
                 mode.click();
             }
         });
