@@ -184,7 +184,8 @@
   }
 
   .btn {
-    &.btn-primary {
+    &.btn-primary,
+    &.btn-secondary {
       background: $bg_color !important;
       background-color: $bg_color !important;
       border-radius: 0 !important;
@@ -200,7 +201,8 @@
     }
   }
 
-  input[type="submit"] {
+  input[type="submit"],
+  button {
     border: 1px dashed $color !important;
     color: $color !important;
   }
@@ -407,7 +409,8 @@
   }
 
   .btn {
-    &.btn-primary {
+    &.btn-primary,
+    &.btn-secondary {
       background: $bg_color !important;
       background-color: $bg_color !important;
       border-radius: 0 !important;
@@ -423,7 +426,8 @@
     }
   }
 
-  input[type="submit"] {
+  input[type="submit"],
+  button {
     color: $color !important;
   }
 

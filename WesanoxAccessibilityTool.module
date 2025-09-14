@@ -12,7 +12,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             'version' => '0.1.2',
             'author' => 'Frittenfritze',
             'href' => 'https://wesanox.de',
-            'icon' => 'male',
+            'icon' => 'blind',
             'singular' => true,
             'autoload' => true,
             'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
