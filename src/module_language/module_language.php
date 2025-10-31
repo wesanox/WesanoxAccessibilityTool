@@ -1,4 +1,15 @@
-<a class="accessibility-option" id="module-language" data-bs-custom-class="bg-tooltip" data-tooltip-title="Leichte Sprache" data-tooltip-text="Hier steht ein kurzer Text zur Funktionsbeschreibung." tabindex="0">
+<?php
+/**
+ * Settingspage - variable to get text and title
+ * @var $settings
+ *
+ * Accessibility Module settings
+ */
+
+$tooltip_title = ($settings->text_language_title != '') ? $settings->text_language_title : 'Leichte Sprache';
+$tooltip_text = ($settings->text_language != '') ? $settings->text_language : 'Hier steht ein kurzer Text zur Funktionsbeschreibung.';
+?>
+<a class="accessibility-option" id="module-language" data-bs-custom-class="bg-tooltip" data-tooltip-title="<?php echo $tooltip_title; ?>" data-tooltip-text="<?php echo $tooltip_text; ?>" tabindex="0">
     <div class="option-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-translate" viewBox="0 0 16 16">
             <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286zm1.634-.736L5.5 3.956h-.049l-.679 2.022z"/>

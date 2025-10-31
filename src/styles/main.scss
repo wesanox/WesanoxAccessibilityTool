@@ -1,6 +1,6 @@
 @import "styles_main/variables";
 
-#page-content:not(.accessibility-widget):not(.accessibility-widget *) {
+#content:not(.accessibility-widget):not(.accessibility-widget *) {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 

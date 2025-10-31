@@ -47,6 +47,9 @@ Under **Modules > Wesanox Accessibility Tool**, you can configure:
 - **Remove Language Modules**  
   Optionally remove language modules upon uninstalling this module.
 
+- **Read Assistance**  
+  Add a readhelper  
+ 
 ## Template Integration
 
 ### 1. Styles and Scripts
@@ -57,26 +60,6 @@ In your site's main template file (e.g., `_head.php` or `_main.php`), add the fo
 echo $modules->WesanoxAccessibilityTool->renderStyles();
 echo $modules->WesanoxAccessibilityTool->renderScripts();
 ```
-
-### 2. HTML Markup Requirements
-
-#### Wrap default content with:
-
-```html
-<main id="page-content">
-    <div id="content">
-        <!-- Default content -->
-    </div>
-</main>
-```
-
-#### Add contrast overlay **after** your site’s `<footer>`:
-
-```html
-<div id="contrast-mode-3" class="d-none" style="background: rgba(255, 147, 41, .8); z-index: 10000000; margin: 0; border-radius: 0; padding: 0; pointer-events: none; position: fixed; inset: -10%; width: auto; height: auto; mix-blend-mode: multiply;"></div>
-```
-
-This overlay is part of the "contrast mode" feature and enhances visual accessibility.
 
 ## Notes
 

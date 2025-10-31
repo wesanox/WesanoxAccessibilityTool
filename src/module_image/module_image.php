@@ -1,4 +1,15 @@
-<div class="accessibility-option" id="bilder-ausblenden" data-bs-custom-class="bg-tooltip" data-tooltip-title="Bilder ausblenden" data-tooltip-text="Hier steht ein kurzer Text zur Funktionsbeschreibung." tabindex="0">
+<?php
+/**
+ * Settingspage - variable to get text and title
+ * @var $settings
+ *
+ * Accessibility Module settings
+ */
+
+$tooltip_title = ($settings->text_image_title != '') ? $settings->text_image_title : 'Bilder ausblenden';
+$tooltip_text = ($settings->text_image != '') ? $settings->text_image : 'Hier steht ein kurzer Text zur Funktionsbeschreibung.';
+?>
+<div class="accessibility-option" id="bilder-ausblenden" data-bs-custom-class="bg-tooltip" data-tooltip-title="<?php echo $tooltip_title; ?>" data-tooltip-text="<?php echo $tooltip_text; ?>" tabindex="0">
     <div class="option-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
             <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>

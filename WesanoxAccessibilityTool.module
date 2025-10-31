@@ -9,26 +9,23 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         return array(
             'title' => 'wesanox Accessibility Tool',
             'summary' => 'A little Accessibility Tool for Processwire made by wesanox.',
-            'version' => '0.1.2',
+            'version' => '0.2.1',
             'author' => 'Frittenfritze',
             'href' => 'https://wesanox.de',
             'icon' => 'male',
             'singular' => true,
             'autoload' => true,
-            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs'],
+            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs','WesanoxFrameworkPackage','WesanoxHelperFields','WesanoxHelperClasses'],
             'requires' => array(
                 'ProcessWire>=3.0.210',
                 'PHP>=8.0.0',
+                'WesanoxFrameworkPackage>=0.0.1',
+                'WesanoxHelperFields>=0.0.1',
+                'WesanoxHelperClasses>=0.0.1',
 //                'WesanoxMatrixContent>=0.0.1',
             ),
         );
     }
-
-    protected string $lang_name = 'de-ls';
-
-//    protected array $externalModules = [
-//        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
-//    ];
 
     protected array $internal_modules = [
         'LanguageSupport',
@@ -37,6 +34,40 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         'LanguageTabs'
     ];
 
+    protected array $external_modules = [
+        'WesanoxFrameworkPackage' => 'https://github.com/wesanox/WesanoxFrameworkPackage/archive/refs/heads/main.zip',
+        'WesanoxHelperFields' => 'https://github.com/wesanox/WesanoxHelperFields/archive/refs/heads/main.zip',
+        'WesanoxHelperClasses' => 'https://github.com/wesanox/WesanoxHelperClasses/archive/refs/heads/main.zip',
+        //        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
+    ];
+
+    /**
+     * @var Module|_Module|null $helper_classes
+     * @var Module|_Module|null $helper_fields
+     */
+    protected Module|_Module|null $helper_fields;
+    protected Module|_Module|null $helper_classes;
+
+    /**
+     * @var string
+     */
+    protected string $lang_name = 'de-ls';
+
+    /**
+     * @var array $fields_array
+     */
+    protected array $fields_array = [];
+
+    /**
+     * @var string $template_options
+     */
+    protected string $template_options = 'options_generals';
+
+    /**
+     * Name of "modules" for the accessibility tool
+     *
+     * @var array|string[]
+     */
     protected array $frontend_modules = [
         'dark',
         'font',
@@ -48,89 +79,16 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     ];
 
     /**
-     * install function for the module
-     *
-     * @return void
      * @throws WirePermissionException
      */
-    public function ___install() : void
+    function __construct()
     {
-        foreach ($this->internal_modules as $moduleName) {
-            if (!$this->modules->isInstalled($moduleName)) {
-                $this->modules->get($moduleName);
-            }
-        }
+        parent::__construct();
 
-        // Install external modules
-        foreach ($this->externalModules as $moduleName => $moduleUrl) {
-            if (!$this->modules->isInstalled($moduleName)) {
-                $message = $this->downloadAndInstallModule($moduleName, $moduleUrl);
-                if ($message !== true) $this->error($message);
-            }
-        }
+        $this->helper_classes = $this->modules->get('WesanoxHelperClasses');
+        $this->helper_fields = $this->modules->get('WesanoxHelperFields');
 
-        $existing_lang = $this->wire->languages->get($this->lang_name);
-        $existing_access = $this->wire->pages->get("name=barrierefreiheit");
-
-        if ($existing_access->id == 0) {
-            $access = new Page();
-            $access->template = 'template_content_only';
-            $access->parent = $this->wire->pages->get(1);
-            $access->name = 'barrierefreiheit';
-            $access->title = 'Barrierefreiheitshinweise';
-            $access->save();
-        }
-
-
-        if($existing_lang && $existing_lang->id) {
-            $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
-        } else {
-            /**
-             * @TODO easy language settings. At the Moment we have Problems with the installation of this part - we got an error at this way
-             */
-//            $language = new Page();
-//            $language->template = 'language';
-//            $language->parent = $this->wire->pages->get("template=language");
-//            $language->name = $this->lang_name;
-//            $language->title = 'Einfache Sprache';
-//            $language->save();
-//
-//            $this->wire->languages->add($language);
-//            $this->wire->languages->add($this->lang_name);
-        }
-
-
-    }
-
-    /**
-     * @param $moduleName
-     * @param $moduleURL
-     * @return bool|string
-     * @throws WireException
-     * @throws WirePermissionException
-     */
-    private function downloadAndInstallModule($moduleName, $moduleURL) {
-        $success = false;
-        $targetDir = $this->wire()->config->paths->siteModules . $moduleName . '/';
-        $moduleInstaller = $this->wire()->modules->get('ProcessModuleInstall');
-        $destinationDir = $moduleInstaller->downloadModule($moduleURL, $targetDir);
-
-        // Refresh modules
-        if($destinationDir) {
-            $this->modules->refresh();
-        }
-
-        // Install module
-        if ($this->modules->isInstallable($moduleName)) {
-            $this->modules->get($moduleName);
-        }
-
-        // Check if module is installed
-        if ($this->modules->isInstalled($moduleName)) {
-            $success = true;
-        }
-
-        return $success ?: "Module $moduleName could not be installed.";
+        $this->fields_array = include $this->config->paths->WesanoxAccessibilityTool . 'config/fields.php';
     }
 
     /**
@@ -147,29 +105,6 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
          * based on its usage in the application. Ensure that
          * adequate context is provided where this variable is utilized.
          */
-        $f = wire('modules')->get('InputfieldCheckboxes');
-        $f->name = 'frontend_modules';
-        $f->label = __('Module im Frontend entfernen');
-        $f->description = __('Wähle die Module aus, die im Frontend entfernt werden sollen.');
-        $f->columnWidth = 50;
-        $f->addOption('not_dark', '"Nachtmodus" nicht anzeigen');
-        $f->addOption('not_font', '"Schriftgröße" nicht anzeigen');
-        $f->addOption('not_contrast', '"Kontrastmodes" nicht anzeigen');
-        $f->addOption('not_read', '"Lesemaske" nicht anzeigen');
-        $f->addOption('not_image', '"Bilder ausblenden" nicht anzeigen');
-        $f->addOption('not_language', '"Leichte Sprache" nicht anzeigen');
-        $f->value = isset($data['frontend_modules']) ? $data['frontend_modules'] : [];
-        $inputfields->add($f);
-
-        $f = wire('modules')->get('InputfieldText');
-        $f->name = 'url_accessibility';
-        $f->label = __('URL für die Barrierefreiheitshinweise.');
-        $f->description = __('Wenn diese nicht gesetzt wird, wird diese auf die Standard-URL der erstellten Seite gesetzt. (/barrierefreiheit/)');
-        $f->placeholder = '/barrierefreiheit/';
-        if (isset($data['url_accessibility'])) $f->value = $data['url_accessibility'];
-        $f->columnWidth = 50;
-        $inputfields->add($f);
-
         $f = wire('modules')->get('InputfieldCheckbox');
         $f->name = 'remove_language_modules';
         $f->label = __('Sprachmodule beim Deinstallieren automatisch entfernen');
@@ -192,6 +127,110 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     }
 
     /**
+     * install function for the module
+     *
+     * @return void
+     * @throws WireException
+     * @throws WirePermissionException
+     */
+    public function ___install() : void
+    {
+        /**
+         * Install internal modules
+         */
+        foreach ($this->internal_modules as $moduleName) {
+            if (!$this->modules->isInstalled($moduleName)) {
+                $this->modules->get($moduleName);
+            }
+        }
+
+        /**
+         * Install external modules
+         */
+        foreach ($this->external_modules as $module_name => $module_url) {
+            if (!$this->modules->isInstalled($module_name)) {
+                $message = $this->helper_classes->downloadInstall($module_name, $module_url);
+                if ($message !== true) $this->error($message);
+            }
+        }
+
+        /**
+         * create fields
+         */
+        foreach ($this->fields_array as $field_array) {
+            $this->helper_fields->createFields($field_array);
+        }
+
+        /**
+         * if not exists, create settings Page or add new Fields
+         * to the settingspage
+         */
+        if ( !$this->templates->get($this->template_options) ) {
+            $fg = new Fieldgroup();
+            $fg->name = $this->template_options;
+            $this->addFieldsToFieldgroup($fg);
+            $fg->save();
+
+            $t = new Template();
+            $t->name = $this->template_options;
+            $t->label = 'Einstellungen';
+            $t->fieldgroup = $fg;
+            $t->icon = 'cogs';
+            $t->tags = 'Options';
+            $t->noParents = -1;
+            $t->save();
+
+            if (!$this->pages->get('template=' . $this->template_options)->id) {
+                $p = new Page();
+                $p->template = $this->template_options;
+                $p->parent = $this->pages->get(1);
+                $p->title = 'Einstellungen';
+                $p->name = 'settings';
+                $p->save();
+            }
+        } else {
+            $t = $this->templates->get($this->template_options);
+
+            $fg = $t->fieldgroup;
+            $this->addFieldsToFieldgroup($fg);
+            $fg->save();
+
+            $t->fieldgroup = $fg;
+            $t->save();
+        }
+
+        $existing_access = $this->wire->pages->get("name=barrierefreiheit");
+
+        if ($existing_access->id == 0) {
+            $access = new Page();
+            $access->template = 'template_content_only';
+            $access->parent = $this->wire->pages->get(1);
+            $access->name = 'barrierefreiheit';
+            $access->title = 'Barrierefreiheitshinweise';
+            $access->save();
+        }
+
+        /**
+         * @TODO easy language settings. At the Moment we have Problems with the installation of this part - we got an error at this way
+         */
+//        $existing_lang = $this->wire->languages->get($this->lang_name);
+//
+//        if($existing_lang && $existing_lang->id) {
+//            $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
+//        } else {
+//            $language = new Page();
+//            $language->template = 'language';
+//            $language->parent = $this->wire->pages->get("template=language");
+//            $language->name = $this->lang_name;
+//            $language->title = 'Einfache Sprache';
+//            $language->save();
+//
+//            $this->wire->languages->add($language);
+//            $this->wire->languages->add($this->lang_name);
+//        }
+    }
+
+    /**
      * uninstall function for the modul
      *
      * @return void
@@ -199,35 +238,79 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
      */
     public function ___uninstall() : void
     {
-        $remove = $this->data['remove_language_modules'] ?? false;
+        /**
+         * remove fields from option page
+         */
+        if($this->templates->get($this->template_options)) {
+            $t = $this->templates->get($this->template_options);
 
+            $fg = $t->fieldgroup;
+            $fg->remove('text_accessibility_url');
+            $fg->remove('select_accessibility');
+            $fg->remove('text_contrast_title');
+            $fg->remove('text_contrast');
+            $fg->remove('text_dark_title');
+            $fg->remove('text_dark');
+            $fg->remove('text_font_title');
+            $fg->remove('text_font');
+            $fg->remove('text_image_title');
+            $fg->remove('text_image');
+            $fg->remove('text_language_title');
+            $fg->remove('text_language');
+            $fg->remove('text_read_title');
+            $fg->remove('text_read');
+            $fg->remove('fieldset_accessibility_settings');
+            $fg->remove('fieldset_accessibility_settings_END');
+            $fg->remove('fieldset_accessibility_content');
+            $fg->remove('fieldset_accessibility_content_END');
+            $fg->remove('tab_accessibility');
+            $fg->remove('tab_accessibility_END');
+            $fg->save();
+
+            $t->setFieldgroup($fg);
+            $t->save();
+        }
+
+        /**
+         * remove accessibility page
+         */
         $existing_access = $this->wire->pages->get("name=barrierefreiheit");
 
         if ($existing_access->id != 0) {
             $existing_access->delete();
         }
 
-        if($remove) {
-            $modules = [
-                'LanguageTabs',
-                'LanguageSupportPageNames',
-                'FieldtypePageTitleLanguage',
-                'FieldtypeTextLanguage',
-                'FieldtypeTextareaLanguage',
-                'LanguageSupportFields',
-                'LanguageSupport',
-            ];
+        /**
+         * remove language
+         */
+//        $remove = $this->data['remove_language_modules'] ?? false;
+//
+//        if($remove) {
+//            $modules = [
+//                'LanguageTabs',
+//                'LanguageSupportPageNames',
+//                'FieldtypePageTitleLanguage',
+//                'FieldtypeTextLanguage',
+//                'FieldtypeTextareaLanguage',
+//                'LanguageSupportFields',
+//                'LanguageSupport',
+//            ];
+//
+//            foreach($modules as $mod) {
+//                if($this->modules->isInstalled($mod)) {
+//                    $this->modules->uninstall($mod);
+//
+//                    wire('log')->save('module-uninstall', "Modul {$mod} wurde entfernt durch MyLanguageCleaner.");
+//                }
+//            }
+//        } else {
+//            wire('log')->save('module-uninstall', "Sprachmodule wurden beibehalten (Konfiguration).");
+//        }
 
-            foreach($modules as $mod) {
-                if($this->modules->isInstalled($mod)) {
-                    $this->modules->uninstall($mod);
-
-                    wire('log')->save('module-uninstall', "Modul {$mod} wurde entfernt durch MyLanguageCleaner.");
-                }
-            }
-        } else {
-            wire('log')->save('module-uninstall', "Sprachmodule wurden beibehalten (Konfiguration).");
-        }
+        /**
+         * delete fields
+         */
+        $this->helper_fields->deleteFields($this->fields_array);
     }
 
     /**
@@ -237,13 +320,21 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     {
         if ($this->page->template != 'admin') {
             $this->addHookAfter('Page::render', $this, 'renderAccessibilityTool');
+            $this->addHookAfter('Page::render', $this, 'renderContrastMode');
         }
     }
 
+    /**
+     * @param HookEvent $event
+     * @return void
+     * @throws WireException
+     */
     public function renderAccessibilityTool(HookEvent $event) {
         $html = $event->return;
 
-        $link_accessibility = ( $this->data['url_accessibility'] != '' ) ? $this->data['url_accessibility'] : '/barrierefreiheit/';
+        $settings_page = $this->pages->get("template=" . $this->template_options);
+
+        $link_accessibility = $settings_page->text_accessibility_url ?? '/barrierefreiheit/';
 
 //        $savedLanguage = wire()->user->language;
 
@@ -329,48 +420,14 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         $event->return = $html;
     }
 
-    /**
-     * Adds a new language with the name "leichte-sprache" or "de-ls" to the system.
-     * The method checks if the language already exists. If it does not, it creates and saves
-     * the new language under the languages root page. Once added, the language becomes available
-     * in the system.
-     *
-     * @return void
-     * @throws WireException If the languages root page cannot be found.
-     */
-    protected function addEasyLanguage() : void {
-        if($this->wire->languages->get($this->lang_name)->id) {
-            $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
-        } else {
-            // Sprachen-Seite finden
-            $parent = $this->wire->pages->get("template=language");
+    public function renderContrastMode(HookEvent $event) {
+        $html = $event->return;
 
-            if(!$parent->id) {
-                throw new WireException("Konnte die Sprachen-Seite nicht finden.");
-            }
+        $insert = '<div id="contrast-mode-3" class="d-none" style="background: rgba(255, 147, 41, .8);z-index: 10000000;margin:0;border-radius:0;padding:0;pointer-events:none;position:fixed;inset:-10%;width:auto;height:auto;mix-blend-mode:multiply;"></div>';
 
-            $this->wire->languages->add($this->lang_name);
+        $html = preg_replace('#</body\s*>#i', "\n$insert\n</body>", $html, 1);
 
-            $this->message("Sprache 'Einfache Sprache' wurde hinzugefügt.");
-        }
-    }
-
-    /**
-     * @return string
-     */
-    private function getModulesFrontend() : string
-    {
-        $html = "";
-
-        foreach ($this->frontend_modules as $module) {
-            $array = (isset($this->data['frontend_modules'])) ? in_array('not_' . $module, $this->data['frontend_modules']) : NULL;
-
-            if (!$array) {
-                $html .= file_get_contents($this->config->paths->root . "site/modules/WesanoxAccessibilityTool/src/module_$module/module_$module.php");
-            }
-        }
-
-        return $html;
+        $event->return = $html;
     }
 
     /**
@@ -425,6 +482,62 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     }
 
     /**
+     * Adds a new language with the name "leichte-sprache" or "de-ls" to the system.
+     * The method checks if the language already exists. If it does not, it creates and saves
+     * the new language under the languages root page. Once added, the language becomes available
+     * in the system.
+     *
+     * @return void
+     * @throws WireException If the languages root page cannot be found.
+     */
+    protected function addEasyLanguage() : void {
+        if($this->wire->languages->get($this->lang_name)->id) {
+            $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
+        } else {
+            // Sprachen-Seite finden
+            $parent = $this->wire->pages->get("template=language");
+
+            if(!$parent->id) {
+                throw new WireException("Konnte die Sprachen-Seite nicht finden.");
+            }
+
+            $this->wire->languages->add($this->lang_name);
+
+            $this->message("Sprache 'Einfache Sprache' wurde hinzugefügt.");
+        }
+    }
+
+    /**
+     * render the Module files for the frontend / output
+     *
+     * @return string
+     *
+     * @throws WireException
+     */
+    private function getModulesFrontend(): string
+    {
+        $settings = $this->pages->get("template=$this->template_options");
+        if(!$settings->id) return '';
+
+        $opts = $settings->select_accessibility;
+        $acc_modules = [];
+
+        foreach ($this->frontend_modules as $module) {
+            $hidden = $opts && $opts->has("value=not_$module");
+
+            if ($hidden) continue;
+
+            $path = $this->config->paths->siteModules . "WesanoxAccessibilityTool/src/module_$module/module_$module.php";
+
+            if(is_file($path)) {
+                $acc_modules[] = wireRenderFile($path, [ 'settings' => $settings ]);
+            }
+        }
+
+        return implode('', $acc_modules);
+    }
+
+    /**
      * Add accessibility styles to the configuration.
      *
      * @param string $files_dir The directory path where the style files are located.
@@ -460,5 +573,35 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         }
 
         return $url;
+    }
+
+    /**
+     * Add fields to fieldgroup
+     *
+     * @param Fieldgroup $fg
+     * @throws WireException
+     */
+    private function addFieldsToFieldgroup($fg) : void
+    {
+        $fg->add('tab_accessibility');
+        $fg->add('fieldset_accessibility_settings');
+        $fg->add('text_accessibility_url');
+        $fg->add('select_accessibility');
+        $fg->add('fieldset_accessibility_settings_END');
+        $fg->add('fieldset_accessibility_content');
+        $fg->add('text_contrast_title');
+        $fg->add('text_contrast');
+        $fg->add('text_dark_title');
+        $fg->add('text_dark');
+        $fg->add('text_font_title');
+        $fg->add('text_font');
+        $fg->add('text_image_title');
+        $fg->add('text_image');
+        $fg->add('text_language_title');
+        $fg->add('text_language');
+        $fg->add('text_read_title');
+        $fg->add('text_read');
+        $fg->add('fieldset_accessibility_content_END');
+        $fg->add('tab_accessibility_END');
     }
 }

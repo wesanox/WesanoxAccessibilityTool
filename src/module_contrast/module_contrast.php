@@ -1,4 +1,15 @@
-<div class="accessibility-option" data-bs-custom-class="bg-tooltip" id="module-contrast-modus" data-tooltip-title="Kontrastmodus" data-tooltip-text="Anpassungen der Schrift - und Hintergrundfarben." tabindex="0">
+<?php
+/**
+ * Settingspage - variable to get text and title
+ * @var $settings
+ *
+ * Accessibility Module settings
+ */
+
+$tooltip_title = ($settings->text_contrast_title != '') ? $settings->text_contrast_title : 'Kontrastmodus';
+$tooltip_text = ($settings->text_contrast != '') ? $settings->text_contrast : 'Anpassungen der Schrift - und Hintergrundfarben.';
+?>
+<div class="accessibility-option" data-bs-custom-class="bg-tooltip" id="module-contrast-modus" data-tooltip-title="<?php echo $tooltip_title; ?>" data-tooltip-text="<?php echo $tooltip_text; ?>" tabindex="0">
     <div class="option-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-shadows" viewBox="0 0 16 16">
             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-8 7a.5.5 0 0 1 0-1h3.5q.048 0 .093.009A7 7 0 0 0 12.9 13H8a.5.5 0 0 1 0-1h5.745q.331-.474.581-1H8a.5.5 0 0 1 0-1h6.71a7 7 0 0 0 .22-1H8a.5.5 0 0 1 0-1h7q0-.51-.07-1H8a.5.5 0 0 1 0-1h6.71a7 7 0 0 0-.384-1H8a.5.5 0 0 1 0-1h5.745a7 7 0 0 0-.846-1H8a.5.5 0 0 1 0-1h3.608A7 7 0 1 0 8 15"/>
