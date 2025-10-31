@@ -81,6 +81,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             $access->save();
         }
 
+
         if($existing_lang && $existing_lang->id) {
             $this->message("Sprache '$this->lang_name' ist bereits vorhanden.");
         } else {
