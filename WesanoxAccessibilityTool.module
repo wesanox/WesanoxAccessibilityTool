@@ -15,7 +15,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
             'icon' => 'male',
             'singular' => true,
             'autoload' => true,
-            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs','WesanoxFrameworkPackage','WesanoxHelperFields','WesanoxHelperClasses'],
+            'installs' => ['LanguageSupport', 'LanguageSupportFields', 'LanguageSupportPageNames', 'LanguageTabs','WesanoxFrameworkPackage','WesanoxHelperFields','WesanoxMatrixContent'],
             'requires' => array(
                 'ProcessWire>=3.0.210',
                 'PHP>=8.0.0',
@@ -37,7 +37,6 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
     protected array $external_modules = [
         'WesanoxFrameworkPackage' => 'https://github.com/wesanox/WesanoxFrameworkPackage/archive/refs/heads/main.zip',
         'WesanoxHelperFields' => 'https://github.com/wesanox/WesanoxHelperFields/archive/refs/heads/main.zip',
-        'WesanoxHelperClasses' => 'https://github.com/wesanox/WesanoxHelperClasses/archive/refs/heads/main.zip',
         'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
     ];
 
@@ -149,7 +148,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
          */
         foreach ($this->external_modules as $module_name => $module_url) {
             if (!$this->modules->isInstalled($module_name)) {
-                $message = $this->helper_classes->downloadInstall($module_name, $module_url);
+                $this->helper_classes->downloadInstall($module_name, $module_url);
             }
         }
 

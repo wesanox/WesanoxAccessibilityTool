@@ -3,13 +3,24 @@
 **Version**: 0.2.1 
 **Author**: Frittenfritze / [wesanox.de](https://wesanox.de)
 
+-----------------------------
+
 ## IMPORTANT NOTICE
 
-First you need to install the [WesanoxHelperClass] (https://github.com/wesanox/WesanoxHelperClasses) and [WesanoxHelperFields] (https://github.com/wesanox/WesanoxHelperFields) module.
+Before installing WesanoxMatrixContent, you must manually install the following required helper modules:
+
+- WesanoxHelperClasses
+  https://github.com/wesanox/WesanoxHelperClasses
+
+These are necessary for field generation and automated module installation.
+
+-----------------------------
 
 ## Description
 
 The **Wesanox Accessibility Tool** is a lightweight accessibility module for [ProcessWire CMS](https://processwire.com). It provides frontend features to improve accessibility and user experience, such as dark mode, font resizing, contrast adjustments, image hiding, and a link to an accessibility statement.
+
+-----------------------------
 
 ## Features
 
@@ -23,17 +34,23 @@ The **Wesanox Accessibility Tool** is a lightweight accessibility module for [Pr
 - Configurable frontend modules
 - Automatic installation of language support modules
 
+-----------------------------
+
 ## Requirements
 
 - ProcessWire >= 3.0.210
 - PHP >= 8.0.0
 - Optional: LanguageSupport modules
 
+-----------------------------
+
 ## Installation
 
 1. Copy the module folder `WesanoxAccessibilityTool` to `/site/modules/`.
 2. In ProcessWire Admin, go to **Modules > Refresh**, then install the module.
 3. Optional: Configure which frontend modules should be hidden via the module settings.
+
+-----------------------------
 
 ## Configuration
 
@@ -53,7 +70,9 @@ Under **Modules > Wesanox Accessibility Tool**, you can configure:
 
 - **Read Assistance**  
   Add a readhelper  
- 
+
+-----------------------------
+
 ## Template Integration
 
 ### 1. Styles and Scripts
@@ -64,6 +83,7 @@ In your site's main template file (e.g., `_head.php` or `_main.php`), add the fo
 echo $modules->WesanoxAccessibilityTool->renderStyles();
 echo $modules->WesanoxAccessibilityTool->renderScripts();
 ```
+-----------------------------
 
 ## Notes
 
@@ -72,6 +92,7 @@ echo $modules->WesanoxAccessibilityTool->renderScripts();
 - Frontend module files (PHP, SCSS, JS) are dynamically loaded from:  
   `/site/modules/WesanoxAccessibilityTool/src/module_<module>/`
 
+-----------------------------
 ## License
 
 MIT License (or specify another if needed)
