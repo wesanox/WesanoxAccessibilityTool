@@ -22,7 +22,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
                 'WesanoxFrameworkPackage>=0.0.1',
                 'WesanoxHelperFields>=0.0.1',
                 'WesanoxHelperClasses>=0.0.1',
-//                'WesanoxMatrixContent>=0.0.1',
+                'WesanoxMatrixContent>=0.0.1',
             ),
         );
     }
@@ -38,7 +38,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         'WesanoxFrameworkPackage' => 'https://github.com/wesanox/WesanoxFrameworkPackage/archive/refs/heads/main.zip',
         'WesanoxHelperFields' => 'https://github.com/wesanox/WesanoxHelperFields/archive/refs/heads/main.zip',
         'WesanoxHelperClasses' => 'https://github.com/wesanox/WesanoxHelperClasses/archive/refs/heads/main.zip',
-        //        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
+        'WesanoxMatrixContent' => 'https://github.com/wesanox/WesanoxMatrixContent/archive/refs/heads/main.zip',
     ];
 
     /**
@@ -150,7 +150,6 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
         foreach ($this->external_modules as $module_name => $module_url) {
             if (!$this->modules->isInstalled($module_name)) {
                 $message = $this->helper_classes->downloadInstall($module_name, $module_url);
-                if ($message !== true) $this->error($message);
             }
         }
 
@@ -334,7 +333,7 @@ class WesanoxAccessibilityTool extends WireData implements Module, ConfigurableM
 
         $settings_page = $this->pages->get("template=" . $this->template_options);
 
-        $link_accessibility = $settings_page->text_accessibility_url ?? '/barrierefreiheit/';
+        $link_accessibility = ( $settings_page->text_accessibility_url != '' ) ? $settings_page->text_accessibility_url : '/barrierefreiheit/';
 
 //        $savedLanguage = wire()->user->language;
 
