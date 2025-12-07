@@ -1,7 +1,11 @@
 # Wesanox Accessibility Tool
 
-**Version**: 0.0.2  
+**Version**: 0.2.1 
 **Author**: Frittenfritze / [wesanox.de](https://wesanox.de)
+
+## IMPORTANT NOTICE
+
+First you need to install the [WesanoxHelperClass] (https://github.com/wesanox/WesanoxHelperClasses) and [WesanoxHelperFields] (https://github.com/wesanox/WesanoxHelperFields) module.
 
 ## Description
 
