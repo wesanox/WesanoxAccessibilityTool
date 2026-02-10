@@ -80,8 +80,8 @@ Under **Modules > Wesanox Accessibility Tool**, you can configure:
 In your site's main template file (e.g., `_head.php` or `_main.php`), add the following:
 
 ```php
-echo $modules->WesanoxAccessibilityTool->renderStyles();
-echo $modules->WesanoxAccessibilityTool->renderScripts();
+echo wire()->modules->WesanoxAccessibilityTool->renderStyles();
+echo wire()->modules->WesanoxAccessibilityTool->renderScripts();
 ```
 -----------------------------
 
